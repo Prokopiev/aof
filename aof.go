@@ -4,11 +4,11 @@ package aof
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"strconv"
 	"strings"
-	"bytes"
 )
 
 var commandsWithoutKey map[string]bool
