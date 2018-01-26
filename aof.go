@@ -75,17 +75,16 @@ func (reader bufioReader) readBytes(bytesCount int) (s string, err error) {
 	var check = make([]byte, 1)
 	for {
 		check, err = reader.input.Peek(1)
-		{
-			if err != nil {
-				return
-			}
+		if err != nil && err != io.EOF {
+			return
 		}
-		if bytes.ContainsAny(check, "\r\n") {
+		if bytes.ContainsAny(check, "\r\n") && err != io.EOF {
 			_, err := io.ReadFull(reader.input, check)
 			if err != nil {
 				return "", err
 			}
 		} else {
+			err = nil
 			break
 		}
 	}
@@ -117,7 +116,7 @@ func (reader bufioReader) readParameter() (s string, err error) {
 	// read parameter
 	str, err = reader.readBytes(size)
 	if err != nil {
-		se := fmt.Sprintf("Corrupt File: invalid parameter length, error:" + e.Error())
+		se := fmt.Sprintf("Corrupt File: invalid parameter length, error:" + err.Error())
 		err = UnexpectedEOF{msg: se}
 		return
 	}
@@ -151,6 +150,7 @@ func (reader bufioReader) ReadOperation() (op Operation, err error) {
 	var key string
 	var subop string
 	str, err := reader.readLine()
+
 	if err != nil {
 		return
 	}
