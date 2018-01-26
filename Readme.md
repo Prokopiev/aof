@@ -11,7 +11,7 @@ used by [aofgrep](http://github.com/gato/aofgrep) (available soon)
 - [x] test writeString Ok
 - [x] test writeString with errors
 - [x] test ToAof OK
-- [ ] change readline to use length instead of searching for \n
+- [x] change readline to use length instead of searching for \n
 - [x] change replace in readline for TrimSuffix
 - [x] 100% test coverage for ReadOperation
 - [x] 100% test coverage for Operation.ToAof

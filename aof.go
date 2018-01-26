@@ -8,6 +8,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"bytes"
 )
 
 var commandsWithoutKey map[string]bool
@@ -63,6 +64,27 @@ func (reader bufioReader) readLine() (s string, err error) {
 	return
 }
 
+func (reader bufioReader) readBytes(bytesCount int) (s string, err error) {
+	buf := make([]byte, bytesCount)
+	_, err = io.ReadFull(reader.input, buf)
+	if err != nil {
+		return
+	}
+	s = string(buf[:bytesCount])
+
+	var check = make([]byte, 1)
+	for {
+		check, _ = reader.input.Peek(1)
+		if bytes.ContainsAny(check, "\r\n") {
+			reader.input.Read(check)
+		} else {
+			break
+		}
+	}
+	return
+
+}
+
 func (reader bufioReader) readParameter() (s string, err error) {
 	// read parameter length
 	str, err := reader.readLine()
@@ -85,8 +107,10 @@ func (reader bufioReader) readParameter() (s string, err error) {
 		return
 	}
 	// read parameter
-	str, err = reader.readLine()
+	str, err = reader.readBytes(size)
 	if err != nil {
+		se := fmt.Sprintf("Corrupt File: invalid parameter length")
+		err = UnexpectedEOF{msg: se}
 		return
 	}
 	if len(str) != size {
