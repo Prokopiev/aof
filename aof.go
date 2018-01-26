@@ -76,7 +76,7 @@ func (reader bufioReader) readBytes(bytesCount int) (s string, err error) {
 	for {
 		check, _ = reader.input.Peek(1)
 		if bytes.ContainsAny(check, "\r\n") {
-			reader.input.Read(check)
+			io.ReadFull(reader.input, check)
 		} else {
 			break
 		}
